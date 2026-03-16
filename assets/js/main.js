@@ -1,54 +1,114 @@
 /* ================================================================
-   main.js — Shared utilities: toast, FAQ, nav active state
+   main.js — Shared: nav injection, toast, FAQ, active links
    ================================================================ */
 (function(){
   'use strict';
 
+  var BASE = '/base64-image-converter';
+
+  /* ── Shared header HTML ── */
+  var NAV_HTML = [
+    '<header class="site-header" role="banner">',
+    '  <div class="header-inner">',
+    '    <a href="'+BASE+'/" class="site-logo" aria-label="Base64 Converter home">',
+    '      <img src="'+BASE+'/assets/main-logo.png" alt="" width="32" height="32"/>',
+    '      <span>Base64 Converter</span>',
+    '    </a>',
+    '    <nav class="site-nav" aria-label="Main navigation">',
+    '      <a href="'+BASE+'/app/base64-to-image/" class="nav-link" data-page="base64-to-image">',
+    '        <i class="fi fi-rr-picture" aria-hidden="true"></i> B64 → Image',
+    '      </a>',
+    '      <a href="'+BASE+'/app/image-to-base64/" class="nav-link" data-page="image-to-base64">',
+    '        <i class="fi fi-rr-upload" aria-hidden="true"></i> Image → B64',
+    '      </a>',
+    '      <a href="https://r.mrlipx.com/tip" target="_blank" rel="noopener noreferrer" class="nav-tip" aria-label="Support this project">',
+    '        <i class="fi fi-rr-heart" aria-hidden="true"></i><span>Tip Jar</span>',
+    '      </a>',
+    '      <a href="https://github.com/MrLiPx/base64-image-converter" target="_blank" rel="noopener noreferrer" class="nav-link nav-github" aria-label="View source on GitHub">',
+    '        <i class="fi fi-brands-github" aria-hidden="true"></i>',
+    '        <span class="gh-label">GitHub</span>',
+    '      </a>',
+    '    </nav>',
+    '  </div>',
+    '</header>'
+  ].join('\n');
+
+  /* ── Shared footer HTML ── */
+  var FOOTER_HTML = [
+    '<footer class="site-footer" role="contentinfo">',
+    '  <div class="footer-inner">',
+    '    <span>© 2026 Base64 Image Converter &mdash;',
+    '      <a href="https://github.com/MrLiPx/base64-image-converter" target="_blank" rel="noopener noreferrer">',
+    '        <i class="fi fi-brands-github" aria-hidden="true"></i> Open source (MIT)',
+    '      </a>',
+    '    </span>',
+    '    <nav class="footer-links" aria-label="Footer navigation">',
+    '      <a href="'+BASE+'/app/">Apps</a>',
+    '      <a href="'+BASE+'/privacy-policy.html">Privacy</a>',
+    '      <a href="'+BASE+'/tos.html">Terms</a>',
+    '      <a href="https://r.mrlipx.com/tip" target="_blank" rel="noopener noreferrer">',
+    '        <i class="fi fi-rr-heart" aria-hidden="true"></i> Tip Jar',
+    '      </a>',
+    '    </nav>',
+    '  </div>',
+    '</footer>'
+  ].join('\n');
+
+  /* ── Inject header & footer ── */
+  document.addEventListener('DOMContentLoaded', function(){
+    // Header
+    var headerEl = document.getElementById('site-header-mount');
+    if (headerEl) headerEl.outerHTML = NAV_HTML;
+
+    // Footer
+    var footerEl = document.getElementById('site-footer-mount');
+    if (footerEl) footerEl.outerHTML = FOOTER_HTML;
+
+    // Mark active nav link
+    markActiveNav();
+  });
+
+  /* ── Active nav ── */
+  function markActiveNav(){
+    var path = window.location.pathname;
+    document.querySelectorAll('.nav-link[data-page]').forEach(function(a){
+      var page = a.dataset.page;
+      var active =
+        page === 'base64-to-image' ? path.indexOf('base64-to-image') !== -1 :
+        page === 'image-to-base64' ? path.indexOf('image-to-base64') !== -1 :
+        page === 'app'             ? path.replace(/\/$/, '').endsWith('/app') :
+        false;
+      a.classList.toggle('active', active);
+    });
+  }
+
   /* ── Toast ── */
-  let _toastTimer = null;
-  window.showToast = function(msg, type) {
-    clearTimeout(_toastTimer);
-    const t = document.getElementById('toast');
+  var _tt = null;
+  window.showToast = function(msg, type){
+    clearTimeout(_tt);
+    var t = document.getElementById('toast');
     if (!t) return;
-    // icon
-    const icons = { success:'fi-rr-check-circle', error:'fi-rr-cross-circle', info:'fi-rr-info', download:'fi-rr-download' };
-    const iconClass = icons[type] || icons.info;
-    t.innerHTML = '<i class="fi ' + iconClass + '"></i><span>' + msg + '</span>';
+    var icons = {success:'fi-rr-check-circle', error:'fi-rr-cross-circle', info:'fi-rr-info', download:'fi-rr-download'};
+    var ic = icons[type] || icons.info;
+    t.innerHTML = '<i class="fi ' + ic + '" aria-hidden="true"></i><span>' + msg + '</span>';
     t.classList.add('show');
-    _toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2800);
+    _tt = setTimeout(function(){ t.classList.remove('show'); }, 2800);
   };
 
   /* ── FAQ accordion ── */
-  window.toggleFaq = function(btn) {
-    const item = btn.closest('.faq-item');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item.open').forEach(function(el){
-      el.classList.remove('open');
-    });
+  window.toggleFaq = function(btn){
+    var item = btn.closest('.faq-item');
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(function(el){ el.classList.remove('open'); });
     if (!isOpen) item.classList.add('open');
+    btn.setAttribute('aria-expanded', (!isOpen).toString());
   };
 
-  /* ── Keyboard: Escape closes open FAQ ── */
+  /* ── Escape closes FAQ ── */
   document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.faq-item.open').forEach(function(el){
-        el.classList.remove('open');
-      });
+    if (e.key === 'Escape'){
+      document.querySelectorAll('.faq-item.open').forEach(function(el){ el.classList.remove('open'); });
     }
   });
-
-  /* ── Mark current nav link active ── */
-  (function markNav(){
-    const path = window.location.pathname;
-    document.querySelectorAll('.nav-link[data-page]').forEach(function(a){
-      const page = a.dataset.page;
-      const isActive =
-        page === 'home'
-          ? path.replace(/\/$/, '') === '/base64-image-converter' || path === '/base64-image-converter/'
-          : path.includes(page);
-      if (isActive) a.classList.add('active');
-      else a.classList.remove('active');
-    });
-  })();
 
 })();
