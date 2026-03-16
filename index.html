@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>base64-tool</title>
+  <link rel="icon" type="image/png" href="assets/logo.png" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #f2f3f5;
+      --surface:    #ffffff;
+      --surface2:   #f8f9fb;
+      --border:     #e2e4ea;
+      --border2:    #cacdd8;
+      --accent:     #4a6cf7;
+      --accent-h:   #3356e0;
+      --accent-bg:  #eef1fe;
+      --danger:     #c94040;
+      --danger-bg:  #fdf1f1;
+      --success:    #1e7c52;
+      --text:       #18192b;
+      --text2:      #474870;
+      --muted:      #9090b0;
+      --mono:       'IBM Plex Mono', monospace;
+      --sans:       'IBM Plex Sans', sans-serif;
+      --radius:     10px;
+      --shadow:     0 1px 4px rgba(0,0,0,0.06), 0 6px 16px rgba(0,0,0,0.04);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .wrapper { max-width: 800px; margin: 0 auto; padding: 0 20px 80px; }
+
+    /* Header */
+    header {
+      padding: 36px 0 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      animation: fadeDown 0.45s ease both;
+    }
+
+    .logo-img {
+      width: 38px; height: 38px;
+      object-fit: contain;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .logo-fallback {
+      width: 38px; height: 38px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .logo-name {
+      font-family: var(--mono);
+      font-size: 1.35rem;
+      font-weight: 500;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .logo-name span { color: var(--accent); }
+
+    .logo-sub {
+      font-family: var(--mono);
+      font-size: 0.73rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    /* Mode Toggle */
+    .mode-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      width: fit-content;
+      margin-bottom: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      animation: fadeUp 0.45s 0.08s ease both;
+    }
+
+    .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.73rem;
+      letter-spacing: 0.09em;
+      padding: 9px 28px;
+      cursor: pointer;
+      transition: background 0.14s, color 0.14s;
+    }
+
+    .mode-btn.active { background: var(--accent); color: #fff; font-weight: 500; }
+    .mode-btn:hover:not(.active) { background: var(--bg); color: var(--text2); }
+
+    /* Card */
+    .card, .out-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .card { animation: fadeUp 0.45s 0.14s ease both; }
+    .out-card { animation: fadeUp 0.45s 0.22s ease both; }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .card-title {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 7px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: vertical;
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      color: var(--text);
+      padding: 14px;
+      line-height: 1.8;
+    }
+
+    textarea::placeholder { color: var(--muted); }
+
+    /* URL Section */
+    .url-section {
+      border-top: 1px solid var(--border);
+      padding: 11px 14px;
+      background: var(--surface2);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .url-row { display: flex; gap: 7px; }
+
+    .url-input {
+      flex: 1;
+      min-width: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text);
+      padding: 7px 11px;
+      outline: none;
+      transition: border-color 0.14s, box-shadow 0.14s;
+    }
+
+    .url-input::placeholder { color: var(--muted); }
+    .url-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,108,247,0.1); }
+    .url-input.is-error { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(201,64,64,0.09); }
+
+    .btn-sm {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      padding: 7px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--accent);
+      background: var(--accent-bg);
+      color: var(--accent);
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.14s;
+    }
+
+    .btn-sm:hover { background: var(--accent); color: #fff; }
+    .btn-sm:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    .url-msg { font-family: var(--mono); font-size: 0.7rem; margin-top: 5px; min-height: 15px; }
+    .url-msg.loading { color: var(--accent); }
+    .url-msg.ok      { color: var(--success); }
+    .url-msg.err     { color: var(--danger); }
+
+    /* Drop Zone */
+    .drop-zone {
+      border: 1.5px dashed var(--border2);
+      border-radius: 7px;
+      margin: 11px 14px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      transition: all 0.14s;
+    }
+
+    .drop-zone:hover, .drop-zone.is-over {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .drop-zone input { display: none; }
+
+    /* Options */
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 9px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--surface2);
+      flex-wrap: wrap;
+    }
+
+    .check-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 0.74rem;
+      color: var(--text2);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .check-label input { accent-color: var(--accent); width: 13px; height: 13px; cursor: pointer; }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 11px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--surface2);
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      padding: 7px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.14s;
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent-h); }
+
+    .btn-ghost { background: var(--surface); border: 1px solid var(--border); color: var(--text2); }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+
+    .btn-danger-soft { background: transparent; border: 1px solid transparent; color: var(--muted); }
+    .btn-danger-soft:hover { color: var(--danger); background: var(--danger-bg); }
+
+    .spacer { flex: 1; }
+
+    .arrow { text-align: center; padding: 12px 0; color: var(--border2); font-size: 1.1rem; }
+
+    /* Output body */
+    .out-body { padding: 14px; min-height: 100px; }
+
+    .out-text {
+      font-family: var(--mono);
+      font-size: 0.84rem;
+      line-height: 1.8;
+      word-break: break-all;
+      white-space: pre-wrap;
+      color: var(--text);
+    }
+
+    .out-text.is-empty { color: var(--muted); font-style: italic; }
+    .out-text.is-error { color: var(--danger); }
+
+    .trunc-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .btn-pill {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid var(--accent);
+      background: var(--accent-bg);
+      color: var(--accent);
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+
+    .btn-pill:hover { background: var(--accent); color: #fff; }
+
+    /* Image Preview */
+    .img-preview {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      padding: 14px;
+      border-top: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .img-preview.visible { display: flex; }
+
+    .img-preview-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .img-preview img {
+      max-width: 100%;
+      max-height: 340px;
+      object-fit: contain;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: repeating-conic-gradient(#e8e8ef 0% 25%, #f4f4f8 0% 50%) 0 0 / 14px 14px;
+      display: block;
+    }
+
+    .img-preview-meta {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .img-preview-meta a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .img-preview-meta a:hover { text-decoration: underline; }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      gap: 20px;
+      padding: 8px 14px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.67rem;
+      color: var(--muted);
+      background: var(--surface2);
+      flex-wrap: wrap;
+    }
+
+    .sv { color: var(--accent); }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 22px; right: 22px;
+      background: var(--text);
+      color: #fff;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 9px 16px;
+      border-radius: 7px;
+      z-index: 999;
+      transform: translateY(56px);
+      opacity: 0;
+      transition: all 0.22s ease;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* Footer */
+    footer {
+      margin-top: 44px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      animation: fadeUp 0.45s 0.35s ease both;
+    }
+
+    footer a { color: var(--muted); text-decoration: none; transition: color 0.14s; }
+    footer a:hover { color: var(--accent); }
+    .footer-links { display: flex; gap: 16px; }
+
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 520px) {
+      .url-row { flex-direction: column; }
+      .btn-sm { width: 100%; text-align: center; }
+      .stats  { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <header>
+    <img
+      class="logo-img"
+      src="assets/logo.png"
+      alt="logo"
+      onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';"
+    />
+    <div class="logo-fallback" id="logoFallback">b64</div>
+    <div>
+      <div class="logo-name">base64<span>_tool</span></div>
+      <div class="logo-sub">encode · decode · any file · open source</div>
+    </div>
+  </header>
+
+  <!-- Mode -->
+  <div class="mode-toggle">
+    <button class="mode-btn active" id="encodeBtn" onclick="setMode('encode')">ENCODE</button>
+    <button class="mode-btn"        id="decodeBtn" onclick="setMode('decode')">DECODE</button>
+  </div>
+
+  <!-- Input Card -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-title" id="cardTitle">Encode</span>
+      <span class="badge"       id="inputBadge">any file / text</span>
+    </div>
+
+    <textarea
+      id="inputText"
+      placeholder="Paste text or drop a file below..."
+      oninput="onInputChange()"
+    ></textarea>
+
+    <!-- URL Fetch -->
+    <div class="url-section">
+      <div class="section-label">Fetch from URL</div>
+      <div class="url-row">
+        <input
+          class="url-input"
+          id="urlInput"
+          type="url"
+          placeholder="https://example.com/image.png"
+          onkeydown="if(event.key==='Enter') fetchUrl()"
+        />
+        <button class="btn-sm" id="fetchBtn" onclick="fetchUrl()">FETCH</button>
+      </div>
+      <div class="url-msg" id="urlMsg"></div>
+    </div>
+
+    <!-- Drop Zone -->
+    <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput" onchange="loadFile(this.files[0])" />
+      ↓ drop any file here, or click to browse
+    </div>
+
+    <!-- Options -->
+    <div class="option-row">
+      <label class="check-label">
+        <input type="checkbox" id="optUrlSafe" onchange="onInputChange()" /> URL-safe
+      </label>
+      <label class="check-label">
+        <input type="checkbox" id="optNoPad" onchange="onInputChange()" /> No padding
+      </label>
+      <label class="check-label">
+        <input type="checkbox" id="optAuto" checked /> Auto-run
+      </label>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-primary"     onclick="run()">RUN ▶</button>
+      <button class="btn btn-ghost"       onclick="copyInput()">COPY INPUT</button>
+      <div class="spacer"></div>
+      <button class="btn btn-danger-soft" onclick="clearAll()">CLEAR</button>
+    </div>
+  </div>
+
+  <div class="arrow">↓</div>
+
+  <!-- Output Card -->
+  <div class="out-card">
+    <div class="card-header">
+      <span class="card-title" id="outTitle">Output</span>
+      <span class="badge"       id="outBadge">—</span>
+    </div>
+
+    <div class="out-body">
+      <div class="out-text is-empty" id="outText">// result will appear here...</div>
+      <div class="trunc-row" id="truncRow" style="display:none">
+        <span id="truncMsg"></span>
+        <button class="btn-pill" onclick="showFull()">Show all</button>
+        <button class="btn-pill" onclick="copyOutput()">Copy full</button>
+      </div>
+    </div>
+
+    <!-- Image Preview -->
+    <div class="img-preview" id="imgPreview">
+      <div class="img-preview-label">Image Preview</div>
+      <img id="previewImg" src="" alt="preview" />
+      <div class="img-preview-meta" id="previewMeta"></div>
+    </div>
+
+    <div class="stats">
+      <span>in: <span class="sv" id="sIn">—</span></span>
+      <span>out: <span class="sv" id="sOut">—</span></span>
+      <span>ratio: <span class="sv" id="sRatio">—</span></span>
+      <span id="sMimeWrap" style="display:none">type: <span class="sv" id="sMime"></span></span>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-ghost" onclick="copyOutput()">COPY OUTPUT</button>
+      <button class="btn btn-ghost" onclick="swapIO()">⇅ SWAP</button>
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="downloadOutput()">↓ DOWNLOAD</button>
+    </div>
+  </div>
+
+  <footer>
+    <span>base64-tool · MIT · open source</span>
+    <div class="footer-links">
+      <a href="https://github.com/your-username/base64-tool" target="_blank">GitHub ↗</a>
+      <a href="https://www.npmjs.com/package/base64-tool" target="_blank">npm ↗</a>
+    </div>
+  </footer>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ── State ── */
+let mode       = 'encode';
+let fullOutput = '';
+let blobUrl    = null;
+let fileMime   = '';
+const TRUNC    = 2000;   // chars shown before truncation
+
+/* ── Utils ── */
+const $ = id => document.getElementById(id);
+
+function fmtBytes(n) {
+  if (n < 1024)     return n + ' B';
+  if (n < 1048576)  return (n / 1024).toFixed(1) + ' KB';
+  return (n / 1048576).toFixed(2) + ' MB';
+}
+
+function revokeBlob() {
+  if (blobUrl) { URL.revokeObjectURL(blobUrl); blobUrl = null; }
+}
+
+function toast(msg) {
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ── Mode ── */
+function setMode(m) {
+  mode = m;
+  $('encodeBtn').classList.toggle('active', m === 'encode');
+  $('decodeBtn').classList.toggle('active', m === 'decode');
+  $('cardTitle').textContent  = m === 'encode' ? 'Encode' : 'Decode';
+  $('inputBadge').textContent = m === 'encode' ? 'any file / text' : 'base64 string';
+  $('inputText').placeholder  = m === 'encode'
+    ? 'Paste text or drop a file below...'
+    : 'Paste Base64 string here...';
+  clearOutput();
+  onInputChange();
+}
+
+/* ── Encode ── */
+function encodeInput(raw) {
+  const urlSafe = $('optUrlSafe').checked;
+  const noPad   = $('optNoPad').checked;
+
+  // readAsBinaryString gives us chars 0-255; use btoa directly.
+  // For plain UTF-8 text typed into the box, encode via encodeURIComponent path.
+  let b64;
+  const hasBinary = /[\x80-\xff]/.test(raw);
+  b64 = hasBinary ? btoa(raw) : btoa(unescape(encodeURIComponent(raw)));
+
+  if (urlSafe) b64 = b64.replace(/\+/g, '-').replace(/\//g, '_');
+  if (noPad)   b64 = b64.replace(/=+$/, '');
+  return b64;
+}
+
+/* ── Decode ── */
+function decodeInput(raw) {
+  let b64 = raw.trim().replace(/\s/g, '');
+
+  // Strip data-URL prefix
+  const dataMatch = b64.match(/^data:([^;]+);base64,(.+)$/i);
+  if (dataMatch) { fileMime = dataMatch[1]; b64 = dataMatch[2]; }
+
+  // Normalise URL-safe + padding
+  b64 = b64.replace(/-/g, '+').replace(/_/g, '/');
+  while (b64.length % 4) b64 += '=';
+
+  const binStr = atob(b64);
+
+  // Sniff whether output is text (no control chars outside tab/LF/CR)
+  let isText = true;
+  const sniff = Math.min(binStr.length, 512);
+  for (let i = 0; i < sniff; i++) {
+    const c = binStr.charCodeAt(i);
+    if (c < 9 || (c > 13 && c < 32)) { isText = false; break; }
+  }
+
+  return { b64, binStr, isText };
+}
+
+/* ── Run ── */
+function run() {
+  const raw = $('inputText').value;
+  if (!raw.trim()) { clearOutput(); return; }
+
+  try {
+    if (mode === 'encode') {
+      const b64 = encodeInput(raw);
+      renderOutput(b64, 'base64', raw.length, b64.length);
+      tryImagePreview(b64);
+
+    } else {
+      const { b64, binStr, isText } = decodeInput(raw);
+
+      if (isText) {
+        const text = decodeURIComponent(escape(binStr));
+        renderOutput(text, 'text', b64.length, text.length);
+      } else {
+        // Binary — show hex sniff summary
+        const bytes = Uint8Array.from(binStr, c => c.charCodeAt(0));
+        const hex   = Array.from(bytes.slice(0, 32))
+                          .map(b => b.toString(16).padStart(2, '0')).join(' ');
+        const summary = '[binary · ' + fmtBytes(bytes.length) + ']\n\nhex (first 32 bytes):\n' + hex;
+        renderOutput(summary, 'binary', b64.length, bytes.length);
+      }
+      tryImagePreview(b64);
+    }
+  } catch(e) {
+    renderError(e.message);
+  }
+}
+
+function onInputChange() {
+  if ($('optAuto').checked) run();
+}
+
+/* ── Output Rendering ── */
+function renderOutput(text, type, inSize, outSize) {
+  fullOutput = text;
+  const el   = $('outText');
+  const preview = text.length > TRUNC ? text.slice(0, TRUNC) : text;
+
+  el.textContent = preview;
+  el.className   = 'out-text';
+
+  if (text.length > TRUNC) {
+    $('truncMsg').textContent = text.length.toLocaleString() + ' chars — showing first ' + TRUNC.toLocaleString();
+    $('truncRow').style.display = 'flex';
+  } else {
+    $('truncRow').style.display = 'none';
+  }
+
+  $('outTitle').textContent = 'Output';
+  $('outBadge').textContent = type;
+  $('sIn').textContent      = fmtBytes(inSize);
+  $('sOut').textContent     = fmtBytes(outSize);
+  $('sRatio').textContent   = inSize ? (outSize / inSize).toFixed(2) + '×' : '—';
+
+  if (fileMime) {
+    $('sMimeWrap').style.display = 'inline';
+    $('sMime').textContent = fileMime;
+  } else {
+    $('sMimeWrap').style.display = 'none';
+  }
+}
+
+function renderError(msg) {
+  fullOutput = '';
+  $('outText').textContent = '// error: ' + msg;
+  $('outText').className   = 'out-text is-error';
+  $('truncRow').style.display = 'none';
+  hidePreview();
+}
+
+function clearOutput() {
+  fullOutput = '';
+  $('outText').textContent = '// result will appear here...';
+  $('outText').className   = 'out-text is-empty';
+  $('truncRow').style.display = 'none';
+  $('sIn').textContent = $('sOut').textContent = $('sRatio').textContent = '—';
+  $('sMimeWrap').style.display = 'none';
+  hidePreview();
+}
+
+function showFull() {
+  $('outText').textContent = fullOutput;
+  $('truncRow').style.display = 'none';
+}
+
+/* ── Image Preview ── */
+// Signatures of common image formats encoded in base64
+const IMG_SIGS = [
+  { prefix: '/9j/',           mime: 'image/jpeg' },
+  { prefix: 'iVBORw0KGgo',   mime: 'image/png'  },
+  { prefix: 'R0lGOD',        mime: 'image/gif'  },
+  { prefix: 'UklGR',         mime: 'image/webp' },
+  { prefix: 'PHN2Zy',        mime: 'image/svg+xml' }, // <svg
+];
+
+function tryImagePreview(b64clean) {
+  let mime = fileMime || '';
+  if (!mime || !mime.startsWith('image/')) {
+    for (const { prefix, mime: m } of IMG_SIGS) {
+      if (b64clean.startsWith(prefix)) { mime = m; break; }
+    }
+  }
+  if (!mime || !mime.startsWith('image/')) { hidePreview(); return; }
+
+  revokeBlob();
+  try {
+    const norm = b64clean.replace(/-/g, '+').replace(/_/g, '/');
+    const bin  = atob(norm.replace(/=+$/, '') + '='.repeat((4 - norm.length % 4) % 4));
+    const buf  = Uint8Array.from(bin, c => c.charCodeAt(0));
+    const blob = new Blob([buf], { type: mime });
+    blobUrl    = URL.createObjectURL(blob);
+
+    $('previewImg').src = blobUrl;
+    $('previewMeta').innerHTML =
+      mime + ' · ' + fmtBytes(blob.size) +
+      ' · <a href="' + blobUrl + '" target="_blank">open blob:// ↗</a>';
+    $('imgPreview').classList.add('visible');
+  } catch { hidePreview(); }
+}
+
+function hidePreview() {
+  revokeBlob();
+  $('imgPreview').classList.remove('visible');
+  $('previewImg').src = '';
+}
+
+/* ── URL Fetch ── */
+async function fetchUrl() {
+  const raw = $('urlInput').value.trim();
+  const inp = $('urlInput');
+  const btn = $('fetchBtn');
+  inp.classList.remove('is-error');
+  setUrlMsg('', '');
+
+  if (!raw) { inp.classList.add('is-error'); setUrlMsg('err', '⚠ Enter a URL first.'); return; }
+
+  let urlObj;
+  try { urlObj = new URL(raw); } catch {
+    inp.classList.add('is-error');
+    setUrlMsg('err', '⚠ Invalid URL — include https://');
+    return;
+  }
+
+  btn.disabled = true;
+  setUrlMsg('loading', '● Fetching…');
+  fileMime = '';
+
+  try {
+    const res = await fetch(raw, { signal: AbortSignal.timeout(12000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
+
+    const ct  = res.headers.get('content-type') || '';
+    fileMime  = ct.split(';')[0].trim();
+
+    const buf  = await res.arrayBuffer();
+    const bin  = String.fromCharCode(...new Uint8Array(buf));
+    $('inputText').value = bin;
+
+    setUrlMsg('ok', '✓ ' + fmtBytes(buf.byteLength) + ' from ' + urlObj.hostname);
+    onInputChange();
+  } catch(e) {
+    inp.classList.add('is-error');
+    const why = e.name === 'TimeoutError'       ? 'request timed out'
+              : e.message.includes('fetch')     ? 'network error or CORS blocked'
+              : e.message;
+    setUrlMsg('err', '⚠ ' + why);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function setUrlMsg(type, text) {
+  const el = $('urlMsg');
+  el.textContent = text;
+  el.className   = 'url-msg' + (type ? ' ' + type : '');
+}
+
+/* ── File Load ── */
+function loadFile(file) {
+  if (!file) return;
+  fileMime = file.type || '';
+  const reader = new FileReader();
+  reader.onload  = e => {
+    $('inputText').value = e.target.result;
+    toast('Loaded: ' + file.name + ' (' + fmtBytes(file.size) + ')');
+    onInputChange();
+  };
+  reader.onerror = () => toast('Error reading file.');
+  // readAsBinaryString preserves all 256 byte values for btoa()
+  reader.readAsBinaryString(file);
+}
+
+const dz = $('dropZone');
+dz.addEventListener('dragover',  e => { e.preventDefault(); dz.classList.add('is-over'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('is-over'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('is-over');
+  const f = e.dataTransfer.files[0];
+  if (f) loadFile(f);
+});
+
+/* ── Actions ── */
+function copyOutput() {
+  if (!fullOutput || fullOutput.startsWith('//')) return;
+  navigator.clipboard.writeText(fullOutput).then(() => toast('Copied!'));
+}
+
+function copyInput() {
+  const v = $('inputText').value;
+  if (!v) return;
+  navigator.clipboard.writeText(v).then(() => toast('Input copied.'));
+}
+
+function clearAll() {
+  $('inputText').value = '';
+  $('urlInput').value  = '';
+  $('urlInput').classList.remove('is-error');
+  setUrlMsg('', '');
+  fileMime = '';
+  clearOutput();
+}
+
+function swapIO() {
+  if (!fullOutput || fullOutput.startsWith('//')) return;
+  $('inputText').value = fullOutput;
+  fileMime = '';
+  setMode(mode === 'encode' ? 'decode' : 'encode');
+  toast('Swapped ⇅');
+}
+
+function downloadOutput() {
+  if (!fullOutput || fullOutput.startsWith('//')) return;
+
+  let blob, name;
+  if (mode === 'encode') {
+    blob = new Blob([fullOutput], { type: 'text/plain' });
+    name = 'encoded.b64';
+  } else {
+    // Decode back to binary for download
+    try {
+      const src = $('inputText').value.trim().replace(/\s/g, '');
+      const b64 = src.replace(/-/g,'+').replace(/_/g,'/');
+      const bin = atob(b64 + '='.repeat((4 - b64.length % 4) % 4));
+      const buf = Uint8Array.from(bin, c => c.charCodeAt(0));
+      const ext = fileMime ? ('.' + (fileMime.split('/')[1] || 'bin')) : '.bin';
+      blob = new Blob([buf], { type: fileMime || 'application/octet-stream' });
+      name = 'decoded' + ext;
+    } catch {
+      blob = new Blob([fullOutput], { type: 'text/plain' });
+      name = 'decoded.txt';
+    }
+  }
+
+  const url = URL.createObjectURL(blob);
+  const a   = Object.assign(document.createElement('a'), { href: url, download: name });
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
